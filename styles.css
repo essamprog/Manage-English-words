@@ -1,0 +1,214 @@
+body {
+    font-family: Arial, sans-serif;
+    direction: rtl;
+    text-align: right;
+    margin: 10px;
+    background: linear-gradient(to right, rgb(2, 51, 63), rgb(0, 19, 22));
+    color: rgb(255, 255, 255);
+}
+
+.input-section, .filter-section {
+    margin-bottom: 15px;
+}
+
+input[type="text"] {
+    margin-right: 10px;
+    padding: 20px;
+    font-size: 18px;
+    border: 2px solid #000000;
+    border-radius: 30px;
+}
+
+button {
+    padding: 12px 12px;
+    border: none;
+    border-radius: 25px;
+    background-color: #007BFF;
+    color: rgb(255, 255, 255);
+    cursor: pointer;
+    font-size: 18px;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+li {
+    margin-bottom: 10px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: rgba(255, 255, 255, 0.2);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+li .text {
+    flex-grow: 1;
+    display: flex;
+    justify-content: space-between;
+}
+
+li .text .word {
+    text-align: right;
+    direction: rtl;
+    font-size: 30px; /*تغير حجم نص الكلمات */
+}
+
+li .text .translated {
+    text-align: left;
+    direction: unset;
+    font-size: 30px;
+}
+
+li .options {
+    position: relative;
+    display: inline-block;
+}
+
+li .options .options-button {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 30px;
+    cursor: pointer;
+}
+
+li .options .options-content {
+    display: none;
+    position: absolute;
+    background-color: #f1f1f1;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+    right: 0;
+}
+
+li .options .options-content button {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+    width: 100%;
+    border: none;
+    background: none;
+    text-align: left;
+}
+
+li .options .options-content button:hover {
+    background-color: #ddd;
+}
+
+li .options:hover .options-content {
+    display: block;
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    left: 1;
+    top: 62px;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.4);
+}
+
+.modal-content {
+    background-color: rgb(1, 65, 95);
+    margin: 15% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width:80%;
+    text-align: center;
+    color: white; /* تعديل اللون إلى الأبيض ليكون متناسقًا مع الخلفية */
+    border-radius: 20px;
+}
+
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 35px;
+    font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+
+
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #f9f9f9;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+    right: 0;
+}
+
+.dropdown-content a {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+    text-align: right;
+}
+
+.dropdown-content a:hover {
+    background-color: #ddd;
+}
+
+.dropdown:hover .dropdown-content {
+    display: block;
+}
+
+.dropdown:hover .dropbtn {
+    background-color: #0056b3;
+}
+body {
+    font-family: Arial, sans-serif;
+    direction: rtl;
+    text-align: right;
+    margin: 20px;
+    background: linear-gradient(to right, rgb(2, 51, 63), rgb(0, 19, 22));
+    color: rgb(255, 255, 255);
+}
+
+#header {
+    text-align: left; /* محاذاة النص إلى اليسار */
+    margin: -13%;
+    padding: 0;
+    margin-left: 100px;
+    padding-top: 150px;
+    font-size: 3vw;
+}
+
+.highlight-text {
+    position: relative;
+    display: inline-block;
+}
+
+.highlight-text::after {
+    content: 'Prog';
+    color: #000000fb; /* تغيير لون الكلمة إلى الأحمر الفاتح */
+    position: absolute;
+    left: 270px;
+    font-size: 78px;
+}
