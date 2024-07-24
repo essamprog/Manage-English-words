@@ -199,16 +199,3 @@ body {
     padding-top: 150px;
     font-size: 3vw;
 }
-
-.highlight-text {
-    position: relative;
-    display: inline-block;
-}
-
-.highlight-text::after {
-    content: 'Prog';
-    color: #000000fb; /* تغيير لون الكلمة إلى الأحمر الفاتح */
-    position: absolute;
-    left: 270px;
-    font-size: 78px;
-}
