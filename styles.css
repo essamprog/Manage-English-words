@@ -2,7 +2,7 @@ body {
     font-family: Arial, sans-serif;
     direction: rtl;
     text-align: right;
-    margin: 10px;
+    margin: 10vw;
     background: linear-gradient(to right, rgb(2, 51, 63), rgb(0, 19, 22));
     color: rgb(255, 255, 255);
 }
@@ -12,17 +12,18 @@ body {
 }
 
 input[type="text"] {
-    margin-right: 10px;
-    padding: 20px;
-    font-size: 18px;
-    border: 2px solid #000000;
-    border-radius: 30px;
+    margin-right: .2vw;
+    padding: 1.5vw;
+    font-size: 1.5vw;
+    border: .2vw solid #000000;
+    border-radius: 20px;
+
 }
 
 button {
-    padding: 12px 12px;
+    padding: 1.5vw 1.5vw;
     border: none;
-    border-radius: 25px;
+    border-radius: 2vw;
     background-color: #007BFF;
     color: rgb(255, 255, 255);
     cursor: pointer;
@@ -39,8 +40,8 @@ ul {
 }
 
 li {
-    margin-bottom: 10px;
-    padding: 10px;
+    margin-bottom: 1vw;
+    padding: .5vw;
     border: 1px solid #ccc;
     border-radius: 5px;
     background-color: rgba(255, 255, 255, 0.2);
@@ -186,16 +187,17 @@ body {
     font-family: Arial, sans-serif;
     direction: rtl;
     text-align: right;
-    margin: 20px;
+    margin: 2vw;
     background: linear-gradient(to right, rgb(2, 51, 63), rgb(0, 19, 22));
     color: rgb(255, 255, 255);
 }
 
 #header {
     text-align: left; /* محاذاة النص إلى اليسار */
-    margin: -13%;
+    margin: -13vw;
     padding: 0;
-    margin-left: 100px;
-    padding-top: 150px;
+    margin-left: 1vw;
+    padding-top: 10vw;
     font-size: 3vw;
 }
+
