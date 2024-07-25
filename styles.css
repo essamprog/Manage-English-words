@@ -1,203 +1,192 @@
-body {
-    font-family: Arial, sans-serif;
-    direction: rtl;
-    text-align: right;
-    margin: 10vw;
-    background: linear-gradient(to right, rgb(2, 51, 63), rgb(0, 19, 22));
-    color: rgb(255, 255, 255);
+let words = JSON.parse(localStorage.getItem('words')) || [];
+let weakWords = JSON.parse(localStorage.getItem('weakWords')) || [];
+let currentIndex;
+let currentList;
+let isWeakWordsView = false;
+
+document.addEventListener('DOMContentLoaded', () => {
+    // Add event listeners to handle Enter key
+    document.getElementById('word-input').addEventListener('keypress', handleKeyPress);
+    document.getElementById('translation-input').addEventListener('keypress', handleKeyPress);
+
+    // Initialize with all words
+    displayWords(words);
+});
+
+function handleKeyPress(event) {
+    if (event.key === 'Enter') {
+        addEntry();
+        event.preventDefault(); // Prevent form submission or other default actions
+    }
 }
 
-.input-section, .filter-section {
-    margin-bottom: 15px;
+function addEntry() {
+    const wordInput = document.getElementById('word-input');
+    const translationInput = document.getElementById('translation-input');
+
+    const word = wordInput.value.trim();
+    const translation = translationInput.value.trim();
+
+    if (word && translation) {
+        // Remove duplicates before adding
+        words = words.filter(entry => entry.word.toLowerCase() !== word.toLowerCase());
+        weakWords = weakWords.filter(entry => entry.word.toLowerCase() !== word.toLowerCase());
+
+        // Add the new entry
+        words.push({ word, translation, reviewed: false });
+        localStorage.setItem('words', JSON.stringify(words));
+        
+        // Clear inputs
+        wordInput.value = '';
+        translationInput.value = '';
+        displayWords(words);
+    }
 }
 
-input[type="text"] {
-    margin-right: .2vw;
-    padding: 1.5vw;
-    font-size: 1.5vw;
-    border: .2vw solid #000000;
-    border-radius: 20px;
+function displayWords(wordsToDisplay) {
+    currentList = wordsToDisplay;
+    isWeakWordsView = wordsToDisplay === weakWords;
+    const outputList = document.getElementById('output-list');
+    outputList.innerHTML = '';
 
+    wordsToDisplay.sort((a, b) => {
+        const wordA = a.word.toLowerCase();
+        const wordB = b.word.toLowerCase();
+        if (wordA < wordB) return -1;
+        if (wordA > wordB) return 1;
+        return 0;
+    });
+
+    wordsToDisplay.forEach((entry, index) => {
+        const listItem = document.createElement('li');
+
+        const textDiv = document.createElement('div');
+        textDiv.classList.add('text');
+        textDiv.innerHTML = `<div class="translated"><b>${index + 1}. ${entry.translation}</b></div> 
+                             <div class="word"><i>${entry.word}</i></div>`;
+        if (!entry.reviewed) {
+            textDiv.style.color = 'red';
+        }
+        textDiv.addEventListener('click', () => {
+            entry.reviewed = true;
+            localStorage.setItem('words', JSON.stringify(words));
+            localStorage.setItem('weakWords', JSON.stringify(weakWords));
+            displayWords(currentList);
+        });
+
+        const playButton = document.createElement('button');
+        playButton.textContent = '🔊';
+        playButton.classList.add('play-button');
+        playButton.addEventListener('click', (event) => {
+            event.stopPropagation();
+            speak(entry.word);
+        });
+
+        const optionsDiv = document.createElement('div');
+        optionsDiv.classList.add('options');
+        const optionsButton = document.createElement('button');
+        optionsButton.classList.add('options-button');
+        optionsButton.textContent = '⚙️';
+        optionsButton.onclick = () => openModal(index);
+        optionsDiv.appendChild(optionsButton);
+
+        listItem.appendChild(textDiv);
+        listItem.appendChild(playButton);
+        listItem.appendChild(optionsDiv);
+        outputList.appendChild(listItem);
+    });
 }
 
-button {
-    padding: 1.5vw 1.5vw;
-    border: none;
-    border-radius: 2vw;
-    background-color: #007BFF;
-    color: rgb(255, 255, 255);
-    cursor: pointer;
-    font-size: 18px;
+function speak(text) {
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = 'en-US';
+    window.speechSynthesis.speak(utterance);
 }
 
-button:hover {
-    background-color: #0056b3;
+function openModal(index) {
+    currentIndex = index;
+    const modal = document.getElementById('modal');
+    const editWordInput = document.getElementById('edit-word-input');
+    const editTranslationInput = document.getElementById('edit-translation-input');
+
+    const entry = currentList[currentIndex];
+    editWordInput.value = entry.word;
+    editTranslationInput.value = entry.translation;
+
+    const markAsWeakButton = document.getElementById('mark-as-weak-button');
+    const moveToAllWordsButton = document.getElementById('move-to-all-words-button');
+
+    // Show/Hide buttons based on current view
+    if (isWeakWordsView) {
+        markAsWeakButton.style.display = 'none';
+        moveToAllWordsButton.style.display = 'block';
+    } else {
+        markAsWeakButton.style.display = 'block';
+        moveToAllWordsButton.style.display = 'none';
+    }
+
+    modal.style.display = 'block';
 }
 
-ul {
-    list-style-type: none;
-    padding: 0;
+function closeModal() {
+    const modal = document.getElementById('modal');
+    modal.style.display = 'none';
 }
 
-li {
-    margin-bottom: 1vw;
-    padding: .5vw;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    background-color: rgba(255, 255, 255, 0.2);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+function saveEdit() {
+    const editWordInput = document.getElementById('edit-word-input');
+    const editTranslationInput = document.getElementById('edit-translation-input');
+
+    currentList[currentIndex].word = editWordInput.value;
+    currentList[currentIndex].translation = editTranslationInput.value;
+
+    localStorage.setItem('words', JSON.stringify(words));
+    localStorage.setItem('weakWords', JSON.stringify(weakWords));
+    closeModal();
+    displayWords(currentList);
 }
 
-li .text {
-    flex-grow: 1;
-    display: flex;
-    justify-content: space-between;
+function confirmDelete() {
+    if (confirm('♻️هل أنت متأكد أنك تريد حذف هذا المدخل؟')) {
+        currentList.splice(currentIndex, 1);
+        if (isWeakWordsView) {
+            localStorage.setItem('weakWords', JSON.stringify(weakWords));
+        } else {
+            localStorage.setItem('words', JSON.stringify(words));
+        }
+        closeModal();
+        displayWords(currentList);
+    }
 }
 
-li .text .word {
-    text-align: right;
-    direction: rtl;
-    font-size: 30px; /*تغير حجم نص الكلمات */
+function markAsWeak() {
+    const entry = currentList[currentIndex];
+    if (!weakWords.includes(entry)) {
+        weakWords.push(entry);
+        localStorage.setItem('weakWords', JSON.stringify(weakWords));
+    }
+    currentList.splice(currentIndex, 1);
+    localStorage.setItem('words', JSON.stringify(words));
+    closeModal();
+    displayWords(currentList);
 }
 
-li .text .translated {
-    text-align: left;
-    direction: unset;
-    font-size: 30px;
+function moveToAllWords() {
+    const entry = currentList[currentIndex];
+    if (!words.includes(entry)) {
+        words.push(entry);
+        localStorage.setItem('words', JSON.stringify(words));
+    }
+    currentList.splice(currentIndex, 1);
+    localStorage.setItem('weakWords', JSON.stringify(weakWords));
+    closeModal();
+    displayWords(currentList);
 }
 
-li .options {
-    position: relative;
-    display: inline-block;
+function showAllWords() {
+    displayWords(words);
 }
 
-li .options .options-button {
-    background: none;
-    border: none;
-    color: white;
-    font-size: 30px;
-    cursor: pointer;
+function showWeakWords() {
+    displayWords(weakWords);
 }
-
-li .options .options-content {
-    display: none;
-    position: absolute;
-    background-color: #f1f1f1;
-    min-width: 160px;
-    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-    z-index: 1;
-    right: 0;
-}
-
-li .options .options-content button {
-    color: black;
-    padding: 12px 16px;
-    text-decoration: none;
-    display: block;
-    width: 100%;
-    border: none;
-    background: none;
-    text-align: left;
-}
-
-li .options .options-content button:hover {
-    background-color: #ddd;
-}
-
-li .options:hover .options-content {
-    display: block;
-}
-
-.modal {
-    display: none;
-    position: fixed;
-    z-index: 1;
-    left: 1;
-    top: 62px;
-    width: 100%;
-    height: 100%;
-    overflow: auto;
-    background-color: rgba(0,0,0,0.4);
-}
-
-.modal-content {
-    background-color: rgb(1, 65, 95);
-    margin: 15% auto;
-    padding: 20px;
-    border: 1px solid #888;
-    width:80%;
-    text-align: center;
-    color: white; /* تعديل اللون إلى الأبيض ليكون متناسقًا مع الخلفية */
-    border-radius: 20px;
-}
-
-.close {
-    color: #aaa;
-    float: right;
-    font-size: 35px;
-    font-weight: bold;
-}
-
-.close:hover,
-.close:focus {
-    color: black;
-    text-decoration: none;
-    cursor: pointer;
-}
-
-
-
-.dropdown {
-    position: relative;
-    display: inline-block;
-}
-
-.dropdown-content {
-    display: none;
-    position: absolute;
-    background-color: #f9f9f9;
-    min-width: 160px;
-    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-    z-index: 1;
-    right: 0;
-}
-
-.dropdown-content a {
-    color: black;
-    padding: 12px 16px;
-    text-decoration: none;
-    display: block;
-    text-align: right;
-}
-
-.dropdown-content a:hover {
-    background-color: #ddd;
-}
-
-.dropdown:hover .dropdown-content {
-    display: block;
-}
-
-.dropdown:hover .dropbtn {
-    background-color: #0056b3;
-}
-body {
-    font-family: Arial, sans-serif;
-    direction: rtl;
-    text-align: right;
-    margin: 2vw;
-    background: linear-gradient(to right, rgb(2, 51, 63), rgb(0, 19, 22));
-    color: rgb(255, 255, 255);
-}
-
-#header {
-    text-align: left; /* محاذاة النص إلى اليسار */
-    margin: -13vw;
-    padding: 0;
-    margin-left: 1vw;
-    padding-top: 10vw;
-    font-size: 3vw;
-}
-
