@@ -7,7 +7,7 @@ body {
     color: rgb(255, 255, 255);
     .clock {
     position: absolute; /* لجعل الزر يتحرك بشكل مستقل داخل الـ modal */
-    top: 11.4vw; /* المسافة من أعلى الـ modal */
+    top: 8.4vw; /* المسافة من أعلى الـ modal */
     left: 1vw;
     font-size: 2rem;
     font-weight: bold;
@@ -16,7 +16,7 @@ body {
     padding: 20px;
     border-radius: 100px;
     box-shadow: 0 0 1px rgba(0, 0, 0, 0.2);
-    width: 17%;
+    width: 19%;
 }
 
 .clock span {
