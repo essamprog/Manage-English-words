@@ -7,6 +7,26 @@ body {
     color: rgb(255, 255, 255);
 }
 
+.clock {
+    position: absolute; /* لجعل الزر يتحرك بشكل مستقل داخل الـ modal */
+    top: 11.4vw; /* المسافة من أعلى الـ modal */
+    left: 1vw;
+    font-size: 2rem;
+    font-weight: bold;
+    background: #0d9eb8;
+    color: #fff;
+    padding: 20px;
+    border-radius: 100px;
+    box-shadow: 0 0 1px rgba(0, 0, 0, 0.2);
+    width: 16%;
+}
+
+.clock span {
+    display: inline-block;
+    min-width: 50px;
+    text-align: center;
+}
+
 .input-section,
 .filter-section {
     margin-bottom: 15px;
@@ -195,24 +215,6 @@ li .options:hover .options-content {
 
 /* styles.css */
 
-.clock {
-    position: absolute; /* لجعل الزر يتحرك بشكل مستقل داخل الـ modal */
-    top: 11.4vw; /* المسافة من أعلى الـ modal */
-    left: 1vw;
-    font-size: 2rem;
-    font-weight: bold;
-    background: #0d9eb8;
-    color: #fff;
-    padding: 20px;
-    border-radius: 100px;
-    box-shadow: 0 0 1px rgba(0, 0, 0, 0.2);
-    width: 16%;
-}
 
-.clock span {
-    display: inline-block;
-    min-width: 50px;
-    text-align: center;
-}
 
 
