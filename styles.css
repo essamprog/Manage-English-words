@@ -7,7 +7,7 @@ body {
     color: rgb(255, 255, 255);
     .clock {
     position: absolute; /* لجعل الزر يتحرك بشكل مستقل داخل الـ modal */
-    top: 8.4vw; /* المسافة من أعلى الـ modal */
+    top: 11.4vw; /* المسافة من أعلى الـ modal */
     left: 1vw;
     font-size: 2rem;
     font-weight: bold;
