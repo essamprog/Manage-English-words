@@ -1,5 +1,6 @@
 let words = JSON.parse(localStorage.getItem('words')) || [];
 let weakWords = JSON.parse(localStorage.getItem('weakWords')) || [];
+let programmingWords = JSON.parse(localStorage.getItem('programmingWords')) || [];
 let currentIndex;
 let currentList;
 let isWeakWordsView = false;
@@ -28,15 +29,21 @@ function addEntry() {
     const translation = translationInput.value.trim();
 
     if (word && translation) {
-        // Remove duplicates before adding
-        words = words.filter(entry => entry.word.toLowerCase() !== word.toLowerCase());
-        weakWords = weakWords.filter(entry => entry.word.toLowerCase() !== word.toLowerCase());
+        // تحقق من وجود الكلمة في أي من القوائم الثلاثة
+        const isDuplicateInWords = words.some(entry => entry.word.toLowerCase() === word.toLowerCase());
+        const isDuplicateInWeakWords = weakWords.some(entry => entry.word.toLowerCase() === word.toLowerCase());
+        const isDuplicateInProgrammingWords = programmingWords.some(entry => entry.word.toLowerCase() === word.toLowerCase());
 
-        // Add the new entry
+        if (isDuplicateInWords || isDuplicateInWeakWords || isDuplicateInProgrammingWords) {
+            alert('الكلمة موجودة بالفعل في إحدى القوائم.');
+            return;
+        }
+
+        // إضافة المدخل الجديد إذا لم تكن الكلمة مكررة
         words.push({ word, translation, reviewed: false });
         localStorage.setItem('words', JSON.stringify(words));
 
-        // Clear inputs
+        // مسح المدخلات
         wordInput.value = '';
         translationInput.value = '';
         displayWords(words);
@@ -48,14 +55,14 @@ function displayWords(wordsToDisplay) {
     isWeakWordsView = wordsToDisplay === weakWords;
     const outputList = document.getElementById('output-list');
     outputList.innerHTML = '';
-
-    wordsToDisplay.sort((a, b) => {
-        const wordA = a.word.toLowerCase();
-        const wordB = b.word.toLowerCase();
-        if (wordA < wordB) return -1;
-        if (wordA > wordB) return 1;
-        return 0;
-    });
+    // تم تعليق الكود التالي لعدم الترتيب ابجديا
+    // wordsToDisplay.sort((a, b) => {
+    //     const wordA = a.word.toLowerCase();
+    //     const wordB = b.word.toLowerCase();
+    //     if (wordA < wordB) return -1;
+    //     if (wordA > wordB) return 1;
+    //     return 0;
+    // });
 
     wordsToDisplay.forEach((entry, index) => {
         const listItem = document.createElement('li');
@@ -71,6 +78,7 @@ function displayWords(wordsToDisplay) {
             entry.reviewed = true;
             localStorage.setItem('words', JSON.stringify(words));
             localStorage.setItem('weakWords', JSON.stringify(weakWords));
+            localStorage.setItem('programmingWords', JSON.stringify(programmingWords));
             displayWords(currentList);
         });
 
@@ -102,7 +110,6 @@ function speak(text) {
     utterance.lang = 'en-US';
     window.speechSynthesis.speak(utterance);
 }
-
 function openModal(index) {
     currentIndex = index;
     const modal = document.getElementById('modal');
@@ -115,55 +122,33 @@ function openModal(index) {
 
     const markAsWeakButton = document.getElementById('mark-as-weak-button');
     const moveToAllWordsButton = document.getElementById('move-to-all-words-button');
+    const markAsProgrammingButton = document.getElementById('mark-as-programming-button');
 
     // Show/Hide buttons based on current view
-    if (isWeakWordsView) {
-        markAsWeakButton.style.display = 'none';
-        moveToAllWordsButton.style.display = 'block';
-    } else {
+    if (currentList === words) {
         markAsWeakButton.style.display = 'block';
         moveToAllWordsButton.style.display = 'none';
+        markAsProgrammingButton.style.display = 'block'; // Show the Add to Programming button
+    } else if (currentList === weakWords) {
+        markAsWeakButton.style.display = 'none';
+        moveToAllWordsButton.style.display = 'block';
+        markAsProgrammingButton.style.display = 'block'; // Hide the Add to Programming button
+    } else if (currentList === programmingWords) {
+        markAsWeakButton.style.display = 'block';
+        moveToAllWordsButton.style.display = 'block';
+        markAsProgrammingButton.style.display = 'none'; // Hide the Add to Programming button
     }
 
     modal.style.display = 'block';
 }
 
-function closeModal() {
-    const modal = document.getElementById('modal');
-    modal.style.display = 'none';
-}
 
-function saveEdit() {
-    const editWordInput = document.getElementById('edit-word-input');
-    const editTranslationInput = document.getElementById('edit-translation-input');
 
-    currentList[currentIndex].word = editWordInput.value;
-    currentList[currentIndex].translation = editTranslationInput.value;
-
-    localStorage.setItem('words', JSON.stringify(words));
-    localStorage.setItem('weakWords', JSON.stringify(weakWords));
-    closeModal();
-    displayWords(currentList);
-}
-
-function confirmDelete() {
-    if (confirm('♻️هل أنت متأكد أنك تريد حذف هذا المدخل؟')) {
-        currentList.splice(currentIndex, 1);
-        if (isWeakWordsView) {
-            localStorage.setItem('weakWords', JSON.stringify(weakWords));
-        } else {
-            localStorage.setItem('words', JSON.stringify(words));
-        }
-        closeModal();
-        displayWords(currentList);
-    }
-}
-
-function markAsWeak() {
+function markAsProgramming() {
     const entry = currentList[currentIndex];
-    if (!weakWords.includes(entry)) {
-        weakWords.push(entry);
-        localStorage.setItem('weakWords', JSON.stringify(weakWords));
+    if (!programmingWords.includes(entry)) {
+        programmingWords.push(entry);
+        localStorage.setItem('programmingWords', JSON.stringify(programmingWords));
     }
     currentList.splice(currentIndex, 1);
     localStorage.setItem('words', JSON.stringify(words));
@@ -183,6 +168,90 @@ function moveToAllWords() {
     displayWords(currentList);
 }
 
+function markAsWeak() {
+    const entry = currentList[currentIndex];
+    if (!weakWords.includes(entry)) {
+        weakWords.push(entry);
+        localStorage.setItem('weakWords', JSON.stringify(weakWords));
+    }
+    currentList.splice(currentIndex, 1);
+    localStorage.setItem('words', JSON.stringify(words));
+    closeModal();
+    displayWords(currentList);
+}
+
+
+
+function closeModal() {
+    const modal = document.getElementById('modal');
+    modal.style.display = 'none';
+}
+
+function saveEdit() {
+    const editWordInput = document.getElementById('edit-word-input');
+    const editTranslationInput = document.getElementById('edit-translation-input');
+
+    currentList[currentIndex].word = editWordInput.value;
+    currentList[currentIndex].translation = editTranslationInput.value;
+
+    localStorage.setItem('words', JSON.stringify(words));
+    localStorage.setItem('weakWords', JSON.stringify(weakWords));
+    localStorage.setItem('programmingWords', JSON.stringify(programmingWords));
+    closeModal();
+    displayWords(currentList);
+}
+
+function confirmDelete() {
+    if (confirm('♻️هل أنت متأكد أنك تريد حذف هذا المدخل؟')) {
+        currentList.splice(currentIndex, 1);
+        if (isWeakWordsView) {
+            localStorage.setItem('weakWords', JSON.stringify(weakWords));
+        } else {
+            localStorage.setItem('words', JSON.stringify(words));
+        }
+        localStorage.setItem('programmingWords', JSON.stringify(programmingWords));
+        closeModal();
+        displayWords(currentList);
+    }
+}
+
+function markAsWeak() {
+    const entry = currentList[currentIndex];
+    if (!weakWords.includes(entry)) {
+        weakWords.push(entry);
+        localStorage.setItem('weakWords', JSON.stringify(weakWords));
+    }
+    currentList.splice(currentIndex, 1);
+    localStorage.setItem('words', JSON.stringify(words));
+    closeModal();
+    displayWords(currentList);
+}
+
+function markAsProgramming() {
+    const entry = currentList[currentIndex];
+    if (!programmingWords.includes(entry)) {
+        programmingWords.push(entry);
+        localStorage.setItem('programmingWords', JSON.stringify(programmingWords));
+    }
+    currentList.splice(currentIndex, 1);
+    localStorage.setItem('words', JSON.stringify(words));
+    closeModal();
+    displayWords(currentList);
+}
+
+function moveToAllWords() {
+    const entry = currentList[currentIndex];
+    if (!words.includes(entry)) {
+        words.push(entry);
+        localStorage.setItem('words', JSON.stringify(words));
+    }
+    currentList.splice(currentIndex, 1);
+    localStorage.setItem('weakWords', JSON.stringify(weakWords));
+    localStorage.setItem('programmingWords', JSON.stringify(programmingWords));
+    closeModal();
+    displayWords(currentList);
+}
+
 function showAllWords() {
     displayWords(words);
 }
@@ -190,3 +259,26 @@ function showAllWords() {
 function showWeakWords() {
     displayWords(weakWords);
 }
+
+function showProgrammingWords() {
+    displayWords(programmingWords);
+}
+
+// script.js
+function updateClock() {
+    const now = new Date();
+    const hours = now.getHours().toString().padStart(2, '0');
+    const minutes = now.getMinutes().toString().padStart(2, '0');
+    const seconds = now.getSeconds().toString().padStart(2, '0');
+
+    document.getElementById('hours').textContent = hours;
+    document.getElementById('minutes').textContent = minutes;
+    document.getElementById('seconds').textContent = seconds;
+}
+
+// تحديث الساعة كل ثانية
+setInterval(updateClock, 1000);
+
+// التحديث الأول عند تحميل الصفحة
+updateClock();
+
